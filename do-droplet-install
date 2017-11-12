@@ -2,11 +2,11 @@
 
 TAG_NAME=
 MACHINE_NAME=
-PUBLIC_KEY=
+PUBLIC_KEY='SSH_KEY_GOES_HERE'
 
 # https://cloud.digitalocean.com/settings/api/tokens
 # Digital Ocean API TOKEN
-#echo export DOKEY=YOUR_KEY_GOES_HERE >> ~/.bashrc
+DOKEY=
 
 # Check Droplet Already Created
 JSON=`curl -X GET "https://api.digitalocean.com/v2/droplets?tag_name=$TAG_NAME" -H "Authorization: Bearer $DOKEY" -H "Content-Type: application/json"`
@@ -27,7 +27,7 @@ curl -X POST "https://api.digitalocean.com/v2/droplets" \
     -d"{\"name\":\"$MACHINE_NAME\",\"region\":\"sfo2\",\"size\":\"512mb\",\"image\":\"centos-7-x64\",\"ssh_username\": \"root\",\"ssh_keys\":null,\"private_networking\":true,\"user_data\":null,\"tags\":[\"$TAG_NAME\"]}" \
     -H "Authorization: Bearer $DOKEY" \
     -H "Content-Type: application/json" 
-sleep 5
+sleep 15
 
 # List Created Droplet
 JSON=`curl -X GET "https://api.digitalocean.com/v2/droplets?tag_name=$TAG_NAME" -H "Authorization: Bearer $DOKEY" -H "Content-Type: application/json"`
@@ -38,7 +38,7 @@ DROPLET_IP=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);pri
 
 # SSH Key Droplet
 curl -X POST "https://api.digitalocean.com/v2/account/keys" \
-    -d "{\"name\":\"$MACHINE_NAME\",\"public_key\":\"$PUBLIC_KEY\"}"" \
+    -d "{\"name\":\"$MACHINE_NAME\",\"public_key\":\"$PUBLIC_KEY\"}" \
     -H "Authorization: Bearer $DOKEY" \
     -H "Content-Type: application/json" 
 sleep 1
@@ -56,7 +56,7 @@ sleep 1
 
 # Domain Droplet
 curl -X POST "https://api.digitalocean.com/v2/domains/$MACHINE_NAME/records"  \
-    -d "{\"type\":\"A\",\"name":\"$MACHINE_NAME\",\"data\":\"$DROPLET_IP\",\"priority\":null,\"port\":null,\"ttl\":1800,\"weight\":null,\"flags\":null,\"tag\":null}" \
+    -d "{\"type\":\"A\",\"name\":\"$MACHINE_NAME\",\"data\":\"$DROPLET_IP\",\"priority\":null,\"port\":null,\"ttl\":1800,\"weight\":null,\"flags\":null,\"tag\":null}" \
     -H "Authorization: Bearer $DOKEY" \
     -H "Content-Type: application/json" 
 sleep 1
