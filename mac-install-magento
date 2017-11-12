@@ -1,0 +1,14 @@
+# Mac OSX Install Magento Developer Edition
+# https://magento.com/tech-resources/download
+cd /var/www/html/
+tar -xvf Magento-CE-2.1.6-2017-03-29-01-08-05.tar.gz ./magento
+brew tap homebrew/dupes
+brew tap homebrew/versions
+brew tap homebrew/homebrew-php
+#brew remove php55-mcrypt
+#brew uninstall --force php55
+brew install php56 php56-mcrypt php56-intl
+cd magento
+composer install
+chmod -R 0755 .
+chmod -R 0777 var

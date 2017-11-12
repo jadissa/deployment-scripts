@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Required vars
+USER=`whoami`
+GROUP_TO_INSTALL=/Groups/_www
+GIT_DIR=/var/www/git
+HTML_DIR=/var/www/html
+
+
+echo 'Authenticate yourself'
+sudo su
+
+
+# Install _www group
+_install_group () {
+
+    echo "Install group '$GROUP_TO_INSTALL'? Y/N"
+
+    read OPTION
+
+    if [ "OPTION" == "Y" ]; then
+
+	COMMAND="sudo -u $USER dscl .read $GROUP_TO_INSTALL"
+
+	OUT=`$COMMAND`
+
+	if [ -z "$OUT" ]; then
+
+    	    sudo -u $USER dscl . create $GROUP_TO_INSTAL
+	    
+	    echo "Enter the guid for $GROUP_TO_INSTALL: "
+
+	    read GUID
+	        
+	    if [ `sudo -u $USER dscl . list /Groups PrimaryGroupID` | grep -e "$GROUP_TO_INSTALL$" | awk '{ print $2; }' == "" ]; then
+	        
+    	        sudo -u $USER dscl . append $GROUP_TO_INSTALL gid $GROUP_TO_INSTALL
+
+    	        sudo -u $USER dscl . append $GROUP_TO_INSTALL  passwd "*"
+
+	        echo "Reading out $GROUP_TO_INSTALL:"
+
+    	        OUT=`$COMMAND`
+
+    	        echo $OUT
+
+	    fi
+
+	fi
+
+    fi
+
+}
+
+
+# Change user password
+_change_passwd () {
+
+    echo "Change password for current user '$USER'? Y/N" 
+
+    read OPTION
+
+    if [ "$OPTION" == "Y" ]; then
+
+	COMMAND="sudo dscl . passwd /Users/$USER"
+
+	$COMMAND
+
+    fi
+
+    source ~/.bash_profile
+
+}
+
+
+# Add user to created group
+_append_to_group () {
+
+    sudo -u root dscl . read $GROUP_TO_INSTALL 
+    sudo -u root dscl . append $GROUP_TO_INSTALL GroupMembership $USER
+
+}
+
+
+# Install html
+_install_html () {
+
+    if [ ! -d "$HTML_DIR" ]; then
+
+        sudo -u _www mkdir -p $HTML_DIR
+
+    fi;
+}
+
+
+_install_brew () {
+
+    echo 'Checking brew...'
+    BREW_INSTALLED=`which brew`
+
+    if [ ! -f $BREW_INSTALLED ]; then
+
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+        brew link overwrite
+
+    fi
+
+    brew doctor
+
+    brew update
+
+}
+
+
+# Driver
+_change_passwd
+
+_install_group
+
+_append_to_group
+
+_install_html
+
+_install_brew
+
+STATUS=`mysql.server status`
+
+if [ $STATUS | grep -e 'Mysql running' ]; then
+  
+    mysql.server restart
+
+else 
+
+    mysql.server start
+
+fi
+
+sudo apachectl configtest
+
+sudo apachectl restart
+
+#Wordpress latest enabled
+#wget --quiet https://raw.githubusercontent.com/jadissa/deployment-scripts/master/mac-install-wordpress .mac-install-wordpress
+#chmod u+x mac-install-wordpress
+#./mac-install-wordpress ; rm ./mac-install-wordpress
+
+#cd /var/www/html/wordpress/
+#wp cli update
+#wp plugin update --all
+#wp theme update --all

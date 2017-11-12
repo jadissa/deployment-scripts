@@ -1,0 +1,26 @@
+cd ~
+
+# Add user that should have root
+sudo adduser user_needing_root
+sudo usermod -G sudo user_needing_root 
+
+# Install packages needed for SSH/hardening
+sudo apt-get -y autoremove && sudo apt-get -y update
+sudo apt-get -y install openssh-server fail2ban
+
+# Disable root login for SSH
+Set PermitRootLogin to no in /etc/ssh/sshd_config
+sudo /etc/init.d/ssh restart
+
+# Generate SSH key and cat this over to your localhost
+ssh-keygen -t ed25519
+cat ~/.ssh/id_ed25519.pub | ssh user@my.host "cat >> ~/.ssh/authorized_keys"
+
+# Update ports to 55
+Update port in /etc/ssh/sshd_config to 55
+sudo /etc/init.d/ssh restart
+Update ssh port in /etc/fail2ban/jail.conf to 55
+sudo /etc/init.d/fail2ban restart
+
+# Move from DHCP to static IP
+#http://www.howtogeek.com/howto/ubuntu/change-ubuntu-server-from-dhcp-to-a-static-ip-address/

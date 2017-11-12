@@ -1,0 +1,40 @@
+sudo yum -y update
+sudo yum-y install sshd
+
+chkconfig sshd on
+service sshd start
+netstat -tulpn | grep :22
+
+# vim /etc/ssh/sshd_config
+# PermitRootLogin no
+# Port 55
+# service sshd restart
+
+# adduser itsupport
+# passwd itsupport
+# gpasswd -a itsupport wheel
+
+systemctl start firewall.service
+firewall-cmd --state
+firewall-cmd --permanent --add-service=ssh
+firewall-cmd --permanent --add-port=50451/tcp
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-port=8080/tcp
+firewall-cmd --permanent --add-service=http
+firewall-cmd --reload
+systemctl restart firewalld
+systemctl enable firewalld
+
+yum -y install policycoreutils-python
+semanage port -l | grep 50451
+semanage port -a -t http_port_t -p tcp 50451
+semanage port -l | grep 8080
+semanage port -a -t http_port_t -p tcp 8080
+
+
+
+firewall-cmd --permanent --remove-port=50451/tcp
+firewall-cmd --permanent --remove-service=http
+firewall-cmd --permanent --remove-port=8080/tcp
+firewall-cmd --permanent --remove-service=http
+firewall-cmd --reload 

@@ -1,0 +1,18 @@
+# Install wp on Mac cli
+# https://www.sitepoint.com/wp-cli/
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+sudo mv wp-cli.phar /usr/local/bin/wp
+
+# Install WordPress
+cd /var/www/html/
+wget https://wordpress.org/latest.tar.gz
+tar -xzvf latest.tar.gz ./wordpress
+sudo chown -R _www wordpress
+sudo chmod -R g+w wordpress
+
+# WordPress update should be moved out to cron for automatic/daily updates
+cd /var/www/html/wordpress
+wp cli update
+wp plugin update --all
+wp theme update --all

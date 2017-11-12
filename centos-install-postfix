@@ -1,0 +1,8 @@
+udo yum -y update
+sudo yum -y install postfix
+sudo /etc/init.d/postfix start
+
+sudo echo "Subject: test mail" >>test.mail
+sudo echo "Testing..." >>test.mail
+sendmail -v username@PlaceYouWork.com < test.mail
+rm -f test.mail

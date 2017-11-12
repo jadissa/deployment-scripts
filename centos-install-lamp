@@ -1,0 +1,37 @@
+sudo yum -y update 
+sudo yum -y install httpd mariadb-server mariadb php php-devel php-mysql php-pdo git mlocate vim openssl-server openssl-clients net-tools iptables-services initscripts zip unzip
+sudo /usr/bin/mysql_secure_installation
+
+sudo service httpd start
+sudo chkconfig httpd on
+sudo service mariadb start
+sudo chkconfig mariadb on
+
+mysql_secure_installation
+#new password: SomePassword
+
+sudo chkconfig sushi on
+sudo service sshd start
+netstat -tulpn | grep :22
+sudo firewall-cmd --zone=public --add-port=22/tcp --permanent
+sudo firewall-cmd --reload
+
+sudo groupadd www
+useradd jamesg -g www -m
+or, if the user has already been created...
+sudo usermod -a -G www username
+exit
+
+groups
+sudo chown -R www:wheel /var/www
+sudo chmod 2775 /var/www
+find /var/www -type d -exec sudo chmod 2775 {} +
+find /var/www -type f -exec sudo chmod 0664 {} +
+
+echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php
+
+sudo systemctl start httpd.service
+sudo systemctl enable httpd.service
+sudo firewall-cmd --permanent --zone=public --add-service=http 
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --reload
