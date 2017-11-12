@@ -43,9 +43,29 @@ curl -X POST "https://api.digitalocean.com/v2/account/keys" \
     -H "Content-Type: application/json" 
 sleep 1
 
+# Check Firewall Already Created
+JSON=`curl -X GET "https://api.digitalocean.com/v2/firewalls" -H "Authorization: Bearer $DOKEY" -H "Content-Type: application/json"`
+
+# Parse Response
+FIREWALL_ID=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["firewalls"][0]["id"]'`
+
+if [ "$FIREWALL_ID"!="" ]; then
+    curl -X DELETE -H "Content-Type: application/json" -H "Authorization: Bearer $DOKEY" "https://api.digitalocean.com/v2/firewalls/$FIREWALL_ID" 
+fi
+
 # Create Firewall
 curl -X POST "https://api.digitalocean.com/v2/firewalls" -d "{\"name\":\"$MACHINE_NAME\",\"inbound_rules\":[{\"protocol\":\"tcp\",\"ports\":\"22\",\"sources\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"tcp\",\"ports\":\"80\",\"sources\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"tcp\",\"ports\":\"8080\",\"sources\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"tcp\",\"ports\":\"27017\",\"sources\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"tcp\",\"ports\":\"50451\",\"sources\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}}],\"outbound_rules\":[{\"protocol\":\"icmp\",\"destinations\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"tcp\",\"ports\":\"all\",\"destinations\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}},{\"protocol\":\"udp\",\"ports\":\"all\",\"destinations\":{\"addresses\":[\"0.0.0.0\/0\",\"::\/0\"]}}],\"droplet_ids\":[$DROPLET_ID],\"tags\":\"$TAG_NAME\"}" -H "Authorization: Bearer $DOKEY" -H "Content-Type: application/json"
 sleep 1
+
+# Check Domain Already Created
+JSON=`curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $DOKEY" "https://api.digitalocean.com/v2/domains/$MACHINE_NAME"`
+
+# Parse Response
+DOMAIN_NAME=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["domain"]["name"]'`
+
+if [ "$DOMAIN_NAME"!="" ]; then
+    curl -X DELETE -H "Content-Type: application/json" -H "Authorization: Bearer $DOKEY" "https://api.digitalocean.com/v2/domains/$MACHINE_NAME" 
+fi
 
 # Create Domain
 curl -X POST "https://api.digitalocean.com/v2/domains" \
