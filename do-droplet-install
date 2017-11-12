@@ -34,7 +34,7 @@ JSON=`curl -X GET "https://api.digitalocean.com/v2/droplets?tag_name=$TAG_NAME" 
 
 # Parse Response
 DROPLET_ID=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["droplets"][0]["id"]'`
-DROPLET_IP=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["droplets"][0]["networks"]["v4"][0]["ip_address"]'`
+DROPLET_IP=`echo $JSON | python -c 'import json,sys;obj=json.load(sys.stdin);print obj["droplets"][0]["networks"]["v4"][1]["ip_address"]'`
 
 # SSH Key Droplet
 curl -X POST "https://api.digitalocean.com/v2/account/keys" \
