@@ -1,0 +1,49 @@
+echo '    .___          .__.__                      '
+
+echo '    |__|____    __| _|__| ______ __________   '
+
+echo '    |  \__  \  / __ ||  |/  ___//  ___\__  \  '
+
+echo '    |  |/ __ \/ /_/ ||  |\___ \ \___ \ / __ \_'
+
+echo '/\__|  (____  \____ ||__/____  /____  (____  /'
+
+echo '\______|    \/     \/        \/     \/     \/ '
+
+echo 'SSH Auto Keygen'
+
+echo
+
+echo 'Type your project name'
+
+read PROJECT_NAME
+
+echo 'Removing whitespace..'
+
+PROJECT_NAME=`echo -e "${PROJECT_NAME// /}"`
+
+echo $PROJECT_NAME
+
+echo 'OK, Y/N'
+
+read CHOICE
+
+if [ "$CHOICE" == "Y" ]; then
+
+    ssh-keygen -t rsa -f /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
+
+    USER=`whoami`
+
+    mkdir /Users/$USER/.ssh/$PROJECT_NAME/
+
+    ssh-add -K /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
+
+    eval "$(ssh-agent -s)"
+
+    pbcopy < /Users/$USER/.ssh/$PROJECT_NAME/id_rsa.pub
+
+    echo 'Copied public key to clipboard'
+
+    echo 'Done'
+
+fi
