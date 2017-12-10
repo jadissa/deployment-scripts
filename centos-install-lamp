@@ -17,12 +17,13 @@ sudo firewall-cmd --zone=public --add-port=22/tcp --permanent
 sudo firewall-cmd --reload
 
 sudo groupadd www
-useradd jamesg -g www -m
+sudo useradd username -g www -m
+sudo useradd www -g wheel
 or, if the user has already been created...
 sudo usermod -a -G www username
+sudo usermod -a -G wheel username
 exit
 
-groups
 sudo chown -R www:wheel /var/www
 sudo chmod 2775 /var/www
 find /var/www -type d -exec sudo chmod 2775 {} +
