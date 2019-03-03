@@ -264,7 +264,7 @@ echo $CENTOS_PASSWORD | passwd $CENTOS_USERNAME --stdin
 #
 #	Download dependencies
 #
-sudo -u $CENTOS_USERNAME ssh-keygen -t rsa -C "$EMAIL" -f /home/$CENTOS_USERNAME/.ssh/id_rsa
+sudo -u $CENTOS_USERNAME ssh-keygen -t rsa -C "$GITHUB_EMAIL" -f /home/$CENTOS_USERNAME/.ssh/id_rsa
 
 chmod 0700 /home/$CENTOS_USERNAME/.ssh/id_rsa
 
