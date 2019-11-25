@@ -20,7 +20,7 @@ read PROJECT_NAME
 
 echo 'Removing whitespace..'
 
-PROJECT_NAME=`echo -e "${PROJECT_NAME// /}"`
+PROJECT_NAME=`echo "${PROJECT_NAME// /}"`
 
 echo $PROJECT_NAME
 
@@ -34,7 +34,7 @@ if [ "$CHOICE" == "Y" ]; then
 
     USER=`whoami`
 
-    mkdir /Users/$USER/.ssh/$PROJECT_NAME/
+    mkdir -p /Users/$USER/.ssh/$PROJECT_NAME/
 
     ssh-add -K /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
 
