@@ -30,20 +30,21 @@ read CHOICE
 
 if [ "$CHOICE" == "Y" ]; then
 
-    mkdir -p /Users/$USER/.ssh/$PROJECT_NAME/
+    mkdir -p ~/.ssh/$PROJECT_NAME/
 
-    ssh-keygen -t rsa -f /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
+    ssh-keygen -t rsa -f ~/.ssh/$PROJECT_NAME/id_rsa
 
     USER=`whoami`
 
-    ssh-add -K /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
-    ssh-add /Users/$USER/.ssh/$PROJECT_NAME/id_rsa
+    ssh-add -k ~/.ssh/$PROJECT_NAME/id_rsa
+    ssh-add ~/.ssh/$PROJECT_NAME/id_rsa
 
-    eval "$(ssh-agent -s)"
+    eval "$(ssh-agent)"
 
-    pbcopy < /Users/$USER/.ssh/$PROJECT_NAME/id_rsa.pub
+    cat ~/.ssh/$PROJECT_NAME/id_rsa.pub
 
-    echo 'Copied public key to clipboard'
+    echo 
+    echo 
 
     echo 'Done'
 
